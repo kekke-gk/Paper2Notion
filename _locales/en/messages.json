@@ -1,0 +1,8 @@
+{
+    "extDesc": {
+        "message": "Create a Notion page from the current tab."
+    },
+    "contextMenuTitle": {
+        "message": "Create a Notion Page"
+    }
+}

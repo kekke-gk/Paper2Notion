@@ -1,0 +1,8 @@
+{
+    "extDesc": {
+        "message": "閲覧中の論文をNotionの新規ページとして追加する。"
+    },
+    "contextMenuTitle": {
+        "message": "Notionに追加"
+    }
+}
