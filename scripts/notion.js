@@ -138,6 +138,14 @@ const MyProperties = {
     type: PropertyType.TEXT,
     name: 'ArXiv ID',
   },
+  semanticScholarURL: {
+    type: PropertyType.URL,
+    name: 'SemanticScholar',
+  },
+  semanticScholarID: {
+    type: PropertyType.TEXT,
+    name: 'SemanticScholar ID',
+  },
   pdfURL: {
     type: PropertyType.URL,
     name: 'PDF Link',
@@ -145,5 +153,9 @@ const MyProperties = {
   conference: {
     type: PropertyType.RELATION,
     name: 'Conference',
+  },
+  numCited: {
+    type: PropertyType.NUMBER,
+    name: 'Cited',
   },
 };
