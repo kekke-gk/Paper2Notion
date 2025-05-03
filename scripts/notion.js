@@ -150,9 +150,9 @@ const MyProperties = {
     type: PropertyType.URL,
     name: 'PDF Link',
   },
-  conference: {
+  venue: {
     type: PropertyType.RELATION,
-    name: 'Conference',
+    name: 'Venue',
   },
   numCited: {
     type: PropertyType.NUMBER,

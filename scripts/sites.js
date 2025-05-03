@@ -49,7 +49,7 @@ class arXiv {
       arXivURL: this.id2abs(paperID),
       arXivID: paperID,
       pdfURL: this.id2pdf(paperID),
-      conference: '197a562d96cc80e0b8dbd6b5c2287f04', // The ID for ArXiv in my Notion
+      venue: '197a562d96cc80e0b8dbd6b5c2287f04', // The ID for ArXiv in my Notion
     };
     return paperInfo;
   }
@@ -90,7 +90,7 @@ class SemanticScholar {
         arXivURL: arXiv.id2abs(id),
         abstractURL: arXiv.id2abs(id),
         pdfURL: arXiv.id2pdf(id),
-        conference: '197a562d96cc80e0b8dbd6b5c2287f04', // The ID for ArXiv in my Notion
+        venue: '197a562d96cc80e0b8dbd6b5c2287f04', // The ID for ArXiv in my Notion
       }
     }
     return paperInfo;
