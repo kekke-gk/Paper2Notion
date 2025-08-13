@@ -76,9 +76,9 @@ export async function createNotionPage(paperInfo) {
 export async function alreadyExists(paperInfo, site) {
   const body = {
     filter: {
-      property: MyProperties.arXivID.name,
+      property: MyProperties.title.name,
       rich_text: {
-        equals: paperInfo.arXivID,
+        equals: paperInfo.title,
       },
     },
   };
@@ -157,5 +157,9 @@ const MyProperties = {
   numCited: {
     type: PropertyType.NUMBER,
     name: 'Cited',
+  },
+  metaStr: {
+    type: PropertyType.TEXT,
+    name: 'Metastr',
   },
 };
