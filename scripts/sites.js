@@ -1,4 +1,5 @@
 import { xmlToJson } from './utils.js';
+import { SEMANTIC_SCHOLAR_API_KEY } from './keys.js';
 
 class arXiv {
   static isMatch(url) {
@@ -66,28 +67,33 @@ class SemanticScholar {
   }
 
   static async getPaperInfo(url) {
+    console.log('Try to get PaperInfo from SemanticScholar: ', url);
     const paperID = this.getID(url);
-    const apiURL = `https://api.semanticscholar.org/v1/paper/${paperID}`;
-    const request = new Request(apiURL);
+    console.log('Paper ID: ', paperID);
+    const apiURL = `https://api.semanticscholar.org/graph/v1/paper/${paperID}?fields=title,citationCount,url,externalIds,openAccessPdf,publicationDate`;
+    const request = new Request(apiURL, {
+      headers: {
+        'x-api-key': SEMANTIC_SCHOLAR_API_KEY
+      }
+    });
 
     const response = await fetch(request);
     const json = await response.json();
     console.log('Semantic Scholar API response: ', json);
     let paperInfo = {
       title: json.title,
-      publishedDate: new Date(json.year, 0, 1),
+      publishedDate: json.publicationDate || new Date(json.year, 0, 1),
       semanticScholarURL: json.url,
       semanticScholarID: paperID,
-      numCited: json.numCitedBy,
+      numCited: json.citationCount,
     };
 
-    if (json.arxivId) {
-      const id = json.arxivId;
+    if (json.externalIds.ArXiv) {
+      const id = json.externalIds.ArXiv;
       paperInfo = {
         ...paperInfo,
         arXivID: id,
         arXivURL: arXiv.id2abs(id),
-        abstractURL: arXiv.id2abs(id),
         pdfURL: arXiv.id2pdf(id),
         venue: '197a562d96cc80e0b8dbd6b5c2287f04', // The ID for ArXiv in my Notion
       }
