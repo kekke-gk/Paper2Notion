@@ -162,4 +162,8 @@ const MyProperties = {
     type: PropertyType.TEXT,
     name: 'Metastr',
   },
+  supplemental: {
+    type: PropertyType.URL,
+    name: 'Supplemental',    
+  },
 };
