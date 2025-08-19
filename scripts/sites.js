@@ -45,7 +45,6 @@ class arXiv {
     const paperInfo = {
       title: json.title[0],
       publishedDate: json.published[0],
-      abstractURL: this.id2abs(paperID),
       arXivURL: this.id2abs(paperID),
       arXivID: paperID,
       pdfURL: this.id2pdf(paperID),
