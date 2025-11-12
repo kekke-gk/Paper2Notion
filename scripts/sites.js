@@ -44,7 +44,7 @@ class arXiv {
     const json = xmlToJson(xml);
     console.log('ArXiv response: ', json);
     const paperInfo = {
-      title: json.title[0],
+      title: json.title[1],
       publishedDate: json.published[0],
       arXivURL: this.id2abs(paperID),
       arXivID: paperID,
