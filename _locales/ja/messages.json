@@ -4,5 +4,20 @@
     },
     "contextMenuTitle": {
         "message": "Notionに追加"
+    },
+    "toastSuccess": {
+        "message": "Notionにページを作成しました。"
+    },
+    "toastGetPaperInfoFailed": {
+        "message": "論文情報を取得できませんでした。"
+    },
+    "toastUnsupportedSite": {
+        "message": "対応するサイトではありません。"
+    },
+    "toastAccessNotionFailed": {
+        "message": "Notionへのアクセスに失敗しました。"
+    },
+    "toastAlreadyExists": {
+        "message": "既にNotionに同じ論文のページが存在します。"
     }
 }

@@ -4,5 +4,20 @@
     },
     "contextMenuTitle": {
         "message": "Create a Notion Page"
+    },
+    "toastSuccess": {
+        "message": "Notion page created successfully."
+    },
+    "toastGetPaperInfoFailed": {
+        "message": "Failed to get paper information."
+    },
+    "toastUnsupportedSite": {
+        "message": "Unsupported site."
+    },
+    "toastAccessNotionFailed": {
+        "message": "Failed to access Notion."
+    },
+    "toastAlreadyExists": {
+        "message": "Notion page already exists."
     }
 }
