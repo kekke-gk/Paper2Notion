@@ -370,6 +370,7 @@ class CVF {
       'CVPR2020': '1cba562d96cc80d5bb7dce0ae3a251e5',
       'CVPR2019': '223a562d96cc8036a4f1de35607730d5',
 
+      'ICCV2025': '241a562d96cc80a3942bf2f22c18ad68',
       'ICCV2023': '1cba562d96cc80028bcacdff662848bd',
       'ICCV2021': '1cba562d96cc802b83d5d4ca905069df',
 
