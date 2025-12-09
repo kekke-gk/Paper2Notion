@@ -396,4 +396,171 @@ class CVF {
   }
 }
 
-export const sites = [arXiv, SemanticScholar, MIRU25, CVF];
+class OpenReview {
+  static isMatch(url) {
+    return this.isMatchHTML(url) || this.isMatchPDF(url);
+  }
+
+  // https://openreview.net/forum?id=2ius36JQUJ
+  static isMatchHTML(url) {
+    const regex = /^https:\/\/openreview\.net\/forum\?id=[\w-]+$/gs;
+    return regex.exec(url) !== null;
+  }
+
+  // https://openreview.net/pdf?id=2ius36JQUJ
+  static isMatchPDF(url) {
+    const regex = /^https:\/\/openreview\.net\/pdf\?id=[\w-]+$/gs;
+    return regex.exec(url) !== null;
+  }
+
+  static getPaperID(url) {
+    const regex = /\?id=(\w+)$/gs;
+    const match = regex.exec(url);
+    return match ? match[1] : null;
+  }
+
+  static conv2html(url) {
+    const paperID = this.getPaperID(url);
+    return this.id2html(paperID);
+  }
+
+  static id2html(paperID) {
+    return `https://openreview.net/forum?id=${paperID}`
+  }
+
+  static id2pdf(paperID) {
+    return `https://openreview.net/pdf?id=${paperID}`
+  }
+
+  static getPageContentFromActiveTab() {
+    return new Promise((resolve, reject) => {
+      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        if (tabs.length === 0) {
+          return reject("アクティブなタブが見つかりません");
+        }
+
+        const tabId = tabs[0].id;
+
+        chrome.scripting.executeScript({
+          target: { tabId: tabId },
+          func: () => {
+            const titleElement = document.getElementsByClassName("citation_title")[0];
+            const title = titleElement ? titleElement.innerText.trim() : "";
+
+            // 05 Sept 2025 (modified: 21 Nov 2025)
+            const dateElement = document.getElementsByClassName("date item")[0];
+            const rawDateText = dateElement ? dateElement.innerText.trim() : "";
+
+            // ICLR 2026 Conference Submission2291 Authors
+            const venueElement = document.getElementsByClassName("forum-authors mb-2")[0];
+            const rawVenueText = venueElement ? venueElement.innerText.trim() : "";
+
+            const parseDateToISO = (text) => {
+              if (!text) return null;
+              const cleanedText = text.split('(')[0].trim();
+              const match = cleanedText.match(/(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})/);
+              if (!match) return null;
+
+              const [, day, monthName, year] = match;
+              const monthKey = monthName.toLowerCase().slice(0, 3);
+              const monthMap = {
+                jan: '01',
+                feb: '02',
+                mar: '03',
+                apr: '04',
+                may: '05',
+                jun: '06',
+                jul: '07',
+                aug: '08',
+                sep: '09',
+                sept: '09',
+                oct: '10',
+                nov: '11',
+                dec: '12',
+              };
+              const month = monthMap[monthKey] || monthMap[monthName.toLowerCase()];
+              if (!month) return null;
+
+              const normalizedDay = day.padStart(2, '0');
+              return `${year}-${month}-${normalizedDay}`;
+            };
+
+            const cleanVenueText = (text) => {
+              if (!text) return null;
+              const condensed = text.replace(/\s+/g, ' ').trim();
+              if (!condensed) return null;
+
+              // Extract tokens like "ICLR 2026" before trailing descriptors.
+              const confYearMatch = condensed.match(/([A-Za-z0-9]+(?:\s+[A-Za-z0-9]+)?)\s+(\d{4})/);
+              if (confYearMatch) {
+                return `${confYearMatch[1].trim()} ${confYearMatch[2]}`.trim();
+              }
+
+              const match = condensed.match(/^(.*?)(Submission|Authors|Reviewers|Paper|Poster)/i);
+              if (match && match[1].trim()) {
+                return match[1].trim();
+              }
+              return condensed;
+            };
+
+            const publishedDate = parseDateToISO(rawDateText);
+            const venue = cleanVenueText(rawVenueText);
+            
+            return { title, publishedDate, venue };
+          }
+        }, (results) => {
+          if (chrome.runtime.lastError) {
+            return reject(chrome.runtime.lastError.message);
+          }
+
+          if (results && results[0] && results[0].result) {
+            resolve(results[0].result);
+          } else {
+            reject("スクリプトの結果が不正です");
+          }
+        });
+      });
+    });
+  }
+
+  static async getPaperInfo(url) {
+    const paperID = this.getPaperID(url);
+
+    let title = null;
+    let publishedDate = null;
+    let venue = null;
+    try {
+      const info = await this.getPageContentFromActiveTab();
+      title = info.title || paperID;
+      publishedDate = info.publishedDate || null;
+      venue = info.venue || null;
+    } catch (error) {
+      console.log('Could not extract content from page, using paper ID:', error);
+      title = paperID;
+    }
+
+    const paperInfo = {
+      title: title,
+      abstractURL: this.id2html(paperID),
+      pdfURL: this.id2pdf(paperID),
+    };
+
+    if (publishedDate) {
+      paperInfo.publishedDate = publishedDate;
+    }
+
+    // Determine venue ID based on conference
+    const venueIDs = {
+      'ICLR 2026': '2c4a562d96cc8029b8b6cc73c3d2845d',
+    }
+
+    if (venue) {
+      const venueId = venueIDs[venue] || null;
+      paperInfo.venue = venueId;
+    }
+
+    return paperInfo;
+  }
+}
+
+export const sites = [arXiv, SemanticScholar, MIRU25, CVF, OpenReview];
