@@ -563,4 +563,10 @@ class OpenReview {
   }
 }
 
-export const sites = [arXiv, SemanticScholar, MIRU25, CVF, OpenReview];
+export const sites = [
+  arXiv,
+  SemanticScholar,
+  MIRU25,
+  CVF,
+  OpenReview
+];
