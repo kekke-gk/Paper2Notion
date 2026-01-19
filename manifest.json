@@ -1,5 +1,5 @@
 {
-  "name": "Paper2Notion",
+  "name": "Paper2NotionWithServer",
   "version": "0.1.0",
   "manifest_version": 3,
   "default_locale": "en",
@@ -31,8 +31,6 @@
     "activeTab"
   ],
   "host_permissions": [
-    "https://*.notion.com/*",
-    "https://*.semanticscholar.org/*",
-    "https://*.arxiv.org/*"
+    "https://*.google.com/*"
   ]
 }
