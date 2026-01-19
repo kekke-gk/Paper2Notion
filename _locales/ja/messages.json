@@ -22,5 +22,8 @@
     },
     "toastAlreadyExists": {
         "message": "既にNotionに同じ論文のページが存在します。"
+    },
+    "toastStartGetPaperInfo": {
+        "message": "論文情報を取得しています..."
     }
 }

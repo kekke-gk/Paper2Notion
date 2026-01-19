@@ -1,6 +1,3 @@
-import { alreadyExists, createNotionPage } from './notion.js';
-import { sites } from './sites.js';
-
 const RES_FLAG = 'Hen3uTHua';
 
 function extractMessageFromHTMLResponse(htmlText) {
@@ -43,8 +40,10 @@ function getToastArgsFromMessage(message) {
 
 async function clickHandler(tab) {
   const apiURL = `https://script.google.com/macros/s/AKfycbxL46zF5vS8QOlmvdixkab88kDuZTJsUT_9UBNUrHNz/dev?key=qbN9qAA8Jxw4&paperurl=${encodeURIComponent(tab.url)}`;
-  // const apiURL = `https://script.google.com/macros/s/AKfycbxL46zF5vS8QOlmvdixkab88kDuZTJsUT_9UBNUrHNz/dev?key=qbN9qAA8Jxw4&paperurl=${tab.url}`;
-  // const apiURL = `https://script.google.com/macros/s/AKfycbxL46zF5vS8QOlmvdixkab88kDuZTJsUT_9UBNUrHNz/dev?key=qbN9qAA8Jxw4`;
+  showToastOnTab(tab.id, {
+    text: chrome.i18n.getMessage('toastStartGetPaperInfo'),
+    type: "running",
+  });
   const response = await fetch(apiURL, {
     method: 'POST',
     body: JSON.stringify({
@@ -61,13 +60,8 @@ async function clickHandler(tab) {
 chrome.action.onClicked.addListener(clickHandler);
 
 function setIcon(url) {
-  for (const site of sites) {
-    if (site.isMatch(url)) {
-      chrome.action.setIcon({ path: '../images/icon128.png' });
-      return;
-    }
-  }
-  chrome.action.setIcon({ path: '../images/icon128_inactive.png' });
+  chrome.action.setIcon({ path: '../images/icon128.png' });
+  // chrome.action.setIcon({ path: '../images/icon128_inactive.png' });
 }
 
 chrome.tabs.onActivated.addListener((activeInfo) => {
@@ -123,7 +117,7 @@ async function showToastOnTab(tabId, { text, type = "success", duration = 3000 }
       toast.style.fontFamily = "system-ui, sans-serif";
       toast.style.fontSize = "14px";
       toast.style.boxShadow = "0 6px 16px rgba(0,0,0,.2)";
-      toast.style.background = type === "success" ? "#16a34a" : "#dc2626";
+      toast.style.background = type === "success" ? "#16a34a" : type === "failure" ? "#dc2626" : "#888888";
       toast.style.opacity = "0";
       toast.style.transform = "translateY(-6px)";
       toast.style.transition = "opacity .18s ease, transform .18s ease";
