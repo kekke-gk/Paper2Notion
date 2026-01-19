@@ -1,47 +1,60 @@
 import { alreadyExists, createNotionPage } from './notion.js';
 import { sites } from './sites.js';
 
-async function fetchPaperAndCreateNotionPage(url) {
-  for (const site of sites) {
-    if (!site.isMatch(url)) continue;
+const RES_FLAG = 'Hen3uTHua';
 
-    console.log('Matched: ', site.name);
+function extractMessageFromHTMLResponse(htmlText) {
+  const regex = new RegExp(`${RES_FLAG}(.*?)${RES_FLAG}`, 'g');
+  const results = [...htmlText.matchAll(regex)].map(m => m[1]);
+  return results[0] || null;
+}
 
-    let paperInfo;
-    try {
-      paperInfo = await site.getPaperInfo(url);
-    } catch (e) {
-      console.error('Error fetching paper info: ', e);
-      return 'toastGetPaperInfoFailed';
-    }
-
-    try {
-      console.log('Check if a page already exists: ', paperInfo);
-      if (await alreadyExists(paperInfo, site)) {
-        console.log('Already exists page: ', paperInfo);
-        return 'toastAlreadyExists';
-      }
-
-      console.log('Try to create page: ', paperInfo);
-      await createNotionPage(paperInfo);
-    } catch (e) {
-      console.error('Error creating Notion page: ', e);
-      return 'toastAccessNotionFailed';
-    }
-
-    return 'toastSuccess';
+function getToastArgsFromMessage(message) {
+  if (!message) {
+    return {
+      text: chrome.i18n.getMessage('toastGetPaperInfoFailed'),
+      type: "failure"
+    };
+  }
+  
+  switch (message) {
+    case 'wrong_key':
+      return {
+        text: chrome.i18n.getMessage('toastGetPaperInfoFailed'),
+        type: "failure"
+      };
+    case 'updated':
+      return {
+        text: chrome.i18n.getMessage('toastUpdated'),
+        type: "success"
+      };
+    case 'created':
+      return {
+        text: chrome.i18n.getMessage('toastSuccess'),
+        type: "success"
+      };
   }
 
-  console.log('Unmatched: ', url);
-  return 'toastUnsupportedSite';
+  return {
+    text: chrome.i18n.getMessage('toastGetPaperInfoFailed'),
+    type: "failure"
+  };
 }
 
 async function clickHandler(tab) {
-  const result = await fetchPaperAndCreateNotionPage(tab.url);
-  const toastArgs = {
-    text: chrome.i18n.getMessage(result),
-    type: result === 'toastSuccess' ? "success" : "failure"
-  };
+  const apiURL = `https://script.google.com/macros/s/AKfycbxL46zF5vS8QOlmvdixkab88kDuZTJsUT_9UBNUrHNz/dev?key=qbN9qAA8Jxw4&paperurl=${encodeURIComponent(tab.url)}`;
+  // const apiURL = `https://script.google.com/macros/s/AKfycbxL46zF5vS8QOlmvdixkab88kDuZTJsUT_9UBNUrHNz/dev?key=qbN9qAA8Jxw4&paperurl=${tab.url}`;
+  // const apiURL = `https://script.google.com/macros/s/AKfycbxL46zF5vS8QOlmvdixkab88kDuZTJsUT_9UBNUrHNz/dev?key=qbN9qAA8Jxw4`;
+  const response = await fetch(apiURL, {
+    method: 'POST',
+    body: JSON.stringify({
+      paperurl: tab.url,
+    }),
+  });
+  
+  const resText = await response.text();
+  const message = extractMessageFromHTMLResponse(resText);
+  const toastArgs = getToastArgsFromMessage(message);
   showToastOnTab(tab.id, toastArgs);
 }
 
