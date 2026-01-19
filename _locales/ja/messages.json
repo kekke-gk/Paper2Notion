@@ -8,6 +8,9 @@
     "toastSuccess": {
         "message": "Notionにページを作成しました。"
     },
+    "toastUpdated": {
+        "message": "Notionのページを更新しました。"
+    },
     "toastGetPaperInfoFailed": {
         "message": "論文情報を取得できませんでした。"
     },
